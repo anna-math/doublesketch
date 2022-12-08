@@ -2,6 +2,8 @@ close all
 clc
 clear
 
+addpath('utils/')
+
 r0 = 10; 
 n1 = 100;
 n2 = 100;
