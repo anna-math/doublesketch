@@ -12,12 +12,10 @@ eps1 = 0.01;
 eps2 = 0.01;
 
 saveBoo = true
-%eps1Vec = 0:.002:.1;
-%eps2Vec =  0:.002:.1;
 
 r1Vec = [11 20 90];
 n3Vec = 1:10:100;
-numTrials = 50;
+numTrials = 100;
 
 figure
 figure('DefaultAxesFontSize',16)
@@ -32,7 +30,6 @@ for kk = 1:length(r1Vec)
         ii
 
         X0 = tprod(randn(nn,r0,n3), randn(r0,nn,n3));
-        X0 = X0 ./tnorm(X0);
 
         errTrials = zeros(numTrials,1);
         for tt = 1:numTrials
@@ -43,7 +40,11 @@ for kk = 1:length(r1Vec)
             end
 
             % Noisy Sketch
-            [YY, Ytilde, SS] = dsSketch(X0, r1, eps1, eps2);
+            Z1 = randn(r1,nn,n3);
+            Z1 = Z1 ./ tnorm(Z1) * eps1;
+            Z2 = randn(r1,nn,n3);
+            Z2 = Z2 ./ tnorm(Z2) * eps2;
+            [YY, Ytilde, SS] = dsSketch(X0, r1, Z1, Z2);
 
             % Transform
             if(tensor)

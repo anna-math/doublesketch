@@ -13,8 +13,17 @@ function [Xhat] = dsRecovery(Y, Ytilde, S)
     [~,n1,~] = size(S);
 
     Xhat = zeros(n1,n2,n3);
-    for kk = 1:n3
-        Xhat(:,:,kk) = Ytilde(:,:,kk)'*pinv(S(:,:,kk)*Ytilde(:,:,kk)')*Y(:,:,kk);
+   
+    if n3 == 1
+       YtildeT = Ytilde';
+    else
+       YtildeT = tran(Ytilde);
     end
-
+    
+    for kk = 1:n3
+        [QQ,~] = qr(YtildeT(:,:,kk), 0);
+        Xhat(:,:,kk) = QQ * pinv(S(:,:,kk) * QQ) * Y(:,:,kk);
+        %Xhat(:,:,kk) = Ytilde(:,:,kk)'*pinv(S(:,:,kk)*Ytilde(:,:,kk)')*Y(:,:,kk);
+    end
+    
 end

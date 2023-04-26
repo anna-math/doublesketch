@@ -3,27 +3,23 @@ clc
 clear
 
 addpath('utils')
+load CTdata.mat 
 
 r0 = 10;
 nn = 100;
-n3 = 1;
-
-X0 = tprod(randn(nn,r0,n3), randn(r0,nn,n3));
-
+n3 = 50;
 
 eps1Vec = 0:.002:.1;
 eps2Vec =  0:.002:.1;
-r1Vec = [11 20 99];
+r1Vec = [200];
 numTrials = 50;
 
 figure
 figure('DefaultAxesFontSize',16)
 
+XX = XX ./ tnorm(XX);
+X0 = XX;
 
-tensor=false;
-if(n3 > 1)
-    tensor = true;
-end
 
 for kk = 1:length(r1Vec)
     r1 = r1Vec(kk)
@@ -35,28 +31,23 @@ for kk = 1:length(r1Vec)
             eps1 = eps1Vec(ii);
             eps2 = eps2Vec(jj);
 
+
             errTrials = zeros(numTrials,1);
             for tt = 1:numTrials
+                tt
 
                 % Noisy Sketch
-                Z1 = randn(r1,nn,n3);
-                Z1 = Z1 ./ tnorm(Z1) * eps1;
-                Z2 = randn(r1,nn,n3);
-                Z2 = Z2 ./ tnorm(Z2) * eps2;
-                [YY, Ytilde, SS] = dsSketch(X0, r1, Z1, Z2);
+                [YY, Ytilde, SS] = dsSketch(X0, r1, eps1, eps2);
 
                 % Transform
-                if(tensor)
                     YY = fft(YY, [], 3);
                     Ytilde = fft(Ytilde, [], 3);
                     SS = fft(SS, [], 3);
-                end
+
 
                 % Recover
                 X1 = dsRecovery(YY, Ytilde, SS);
-                if(tensor)
-                    X1 = ifft(X1, [], 3);
-                end
+                X1 = ifft(X1, [], 3);
 
                 errTrials(tt) = tnorm(X1 - X0);
             end
@@ -68,17 +59,14 @@ for kk = 1:length(r1Vec)
         end
     end
 
-
 subplot(1,length(r1Vec),kk)
 imagesc(fliplr(err')')
 xlabel('\epsilon_1')
 ylabel('\epsilon_2')
-xticks(5:15:length(eps1Vec))
-yticks(4:15:length(eps2Vec))
-xticklabels(eps1Vec(5:15:length(eps1Vec)))
-yticklabels(fliplr(eps2Vec(4:15:length(eps2Vec))))
-maxX = median(err(:));
-caxis([0,.2])
+xticks(5:10:length(eps1Vec))
+yticks(4:10:length(eps2Vec))
+xticklabels(eps1Vec(5:10:length(eps1Vec)))
+yticklabels(fliplr(eps2Vec(4:10:length(eps2Vec))))
 colorbar
 
 %figure
