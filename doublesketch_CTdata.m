@@ -9,7 +9,7 @@ eps1 = 0.01;
 eps2 =  0.01;
 rr = 200;
 numTrials = 50;
-saveBoo = true;
+saveBoo = false;
 
 XX = XX ./ tnorm(XX);
 [n1,n2,n3] = size(XX);
@@ -44,11 +44,11 @@ errMat = [];
 for tt=1:numTrials
     X1Matrix = zeros(n1,n2,n3);
     % Noisy Sketch
+    Z1 = randn(rr,n2,n3);
+    Z1 = Z1 ./ tnorm(Z1) * eps1;
+    Z2 = randn(rr,n1,n3);
+    Z2 = Z2 ./ tnorm(Z2) * eps2;
     for ii = 1:n3
-        Z1 = randn(rr,n2,n3);
-        Z1 = Z1 ./ tnorm(Z1) * eps1;
-        Z2 = randn(rr,n1,n3);
-        Z2 = Z2 ./ tnorm(Z2) * eps2;
         [YY, Ytilde, SS] = dsSketch(XX(:,:,ii), rr, Z1(:,:,ii), Z2(:,:,ii));
         Xi = dsRecovery(YY, Ytilde, SS);
         X1Matrix(:,:,ii) = Xi;
